@@ -54,33 +54,46 @@
         "custom_block_nFU6Jh": {
           "type": "custom_block",
           "settings": {
-            "title": "Block Title",
+            "image": "shopify://shop_images/432fc8987db13cfa6de20a2af7e87bca7ee292bd.png",
+            "title": "Super Solid Glass - Glanz",
             "description": "Add your block description here.",
-            "url": ""
+            "url": "shopify://products/the-3p-fulfilled-snowboard"
           }
         },
         "custom_block_RwX4fP": {
           "type": "custom_block",
           "settings": {
-            "title": "Block Title",
+            "image": "shopify://shop_images/19447179fa3745585ac5bed38185907057e99709.png",
+            "title": "Super Solid Glass - Glanz",
             "description": "Add your block description here.",
-            "url": ""
+            "url": "shopify://products/the-collection-snowboard-hydrogen"
           }
         },
         "custom_block_p8ttih": {
           "type": "custom_block",
           "settings": {
-            "title": "Block Title",
+            "image": "shopify://shop_images/b0bdc61646cf370478ca1573b472046f01042e4e.png",
+            "title": "Super Solid Glass - Glanz",
             "description": "Add your block description here.",
-            "url": ""
+            "url": "shopify://products/the-collection-snowboard-liquid"
           }
         },
         "custom_block_eG8fbi": {
           "type": "custom_block",
           "settings": {
-            "title": "Block Title",
+            "image": "shopify://shop_images/8a85bc715428585607978d87f84f4ba51031ad6e.png",
+            "title": "Super Solid Glass - Glanz",
             "description": "Add your block description here.",
-            "url": ""
+            "url": "shopify://products/the-collection-snowboard-oxygen"
+          }
+        },
+        "custom_block_eW3aDz": {
+          "type": "custom_block",
+          "settings": {
+            "image": "shopify://shop_images/6c82b476fc8b972d7da0854b0470fffea3b55b87.png",
+            "title": "Super Solid Glass - Glanz",
+            "description": "Add your block description here.",
+            "url": "shopify://products/the-compare-at-price-snowboard"
           }
         }
       },
@@ -88,7 +101,8 @@
         "custom_block_nFU6Jh",
         "custom_block_RwX4fP",
         "custom_block_p8ttih",
-        "custom_block_eG8fbi"
+        "custom_block_eG8fbi",
+        "custom_block_eW3aDz"
       ],
       "name": "Custom Block Swiper",
       "settings": {
