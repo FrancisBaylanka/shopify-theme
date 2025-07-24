@@ -1,0 +1,562 @@
+{%- unless skip_styles -%}
+    <style>
+      .custom-block-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+      }
+      
+      .custom-block-container {
+        display: flex;
+        transition: transform 0.3s ease;
+      }
+      
+      .custom-block-slide {
+        flex: 0 0 auto;
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+      }
+      
+      @media (min-width: 750px) {
+        .custom-block-slide {
+          width: 50%;
+        }
+      }
+      
+      @media (min-width: 990px) {
+        .custom-block-slide {
+          width: 33.333%;
+        }
+      }
+      
+      @media (min-width: 1200px) {
+        .custom-block-slide {
+          width: 25%;
+        }
+      }
+      
+      .custom-block-card {
+        position: relative;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: var(--gradient-background);
+        height: 100%;
+      }
+      
+      .custom-block-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      
+      .custom-block-media {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 6/7;
+        overflow: hidden;
+      }
+      
+      .custom-block-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      
+      .custom-block-card:hover .custom-block-media img {
+        transform: scale(1.05);
+      }
+
+      .custom-block-media::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, 
+          rgba(0, 0, 0, 0.1) 0%, 
+          rgba(0, 0, 0, 0.3) 50%, 
+          rgba(0, 0, 0, 0.7) 100%);
+        z-index: 1;
+      }
+      
+      .custom-block-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1.5rem;
+        z-index: 2;
+        color: white;
+        background: transparent;
+      }
+      
+      .custom-block-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.3;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      
+      .custom-block-description {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.5;
+        margin: 0;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      
+      .swiper-button-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2rem;
+        gap: 2rem;
+      }
+
+      .swiper-button-prev,
+      .swiper-button-next {
+        position: static;
+        transform: none;
+        width: 44px;
+        height: 44px;
+        background: rgba(var(--color-background), 0.9);
+        border: 1px solid rgba(var(--color-foreground), 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 2;
+        flex-shrink: 0;
+      }
+
+      .swiper-button-prev:hover,
+      .swiper-button-next:hover {
+        background: rgba(var(--color-foreground), 0.1);
+      }
+
+      .swiper-button-prev svg,
+      .swiper-button-next svg {
+        width: 18px;
+        height: 18px;
+        fill: rgb(var(--color-foreground));
+      }
+
+      .swiper-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0;
+      }
+
+      .swiper-pagination-bullet {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(var(--color-foreground), 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+
+      .swiper-pagination-bullet-active {
+        background: rgb(var(--color-foreground));
+        transform: scale(1.2);
+      }
+
+      @media (max-width: 749px) {
+        .swiper-button-container {
+          gap: 1rem;
+        }
+        
+        .swiper-button-prev,
+        .swiper-button-next {
+          width: 36px;
+          height: 36px;
+        }
+        
+        .swiper-button-prev svg,
+        .swiper-button-next svg {
+          width: 16px;
+          height: 16px;
+        }
+        
+        .swiper-pagination-bullet {
+          width: 10px;
+          height: 10px;
+        }
+        
+        .custom-block-content {
+          padding: 1rem;
+        }
+        
+        .custom-block-title {
+          font-size: 1.125rem;
+        }
+
+        .custom-block-description {
+          font-size: 0.8rem;
+        }
+      }
+
+      .title-slider {
+        font-size: {{ section.settings.heading_size }}px;
+        text-align: {{ section.settings.heading_alignment }};
+        font-weight: 600;
+        margin-bottom: 2rem;
+        color: #000000;
+      }
+
+      .custom-block-wrapper {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    </style>
+  {%- endunless -%}
+  
+  <div class="custom-block-wrapper">
+    <div class="title-slider">{{ section.settings.title }}</div>
+    <div class="custom-block-container" id="swiper-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        <div class="custom-block-slide">
+          {%- if block.settings.url != blank -%}
+            <a href="{{ block.settings.url }}" class="custom-block-card">
+          {%- else -%}
+            <div class="custom-block-card">
+          {%- endif -%}
+            
+            <div class="custom-block-media">
+              {%- if block.settings.image != blank -%}
+                <img
+                  srcset="
+                    {%- if block.settings.image.width >= 165 -%}{{ block.settings.image | image_url: width: 165 }} 165w,{%- endif -%}
+                    {%- if block.settings.image.width >= 360 -%}{{ block.settings.image | image_url: width: 360 }} 360w,{%- endif -%}
+                    {%- if block.settings.image.width >= 533 -%}{{ block.settings.image | image_url: width: 533 }} 533w,{%- endif -%}
+                    {%- if block.settings.image.width >= 720 -%}{{ block.settings.image | image_url: width: 720 }} 720w,{%- endif -%}
+                    {%- if block.settings.image.width >= 940 -%}{{ block.settings.image | image_url: width: 940 }} 940w,{%- endif -%}
+                    {{ block.settings.image | image_url }} {{ block.settings.image.width }}w
+                  "
+                  src="{{ block.settings.image | image_url: width: 533 }}"
+                  sizes="(min-width: 1200px) 300px, (min-width: 990px) 320px, (min-width: 750px) 350px, calc(100vw - 40px)"
+                  alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+
+              <div class="custom-block-content">
+                {%- if block.settings.title != blank -%}
+                  <h3 class="custom-block-title">{{ block.settings.title | escape }}</h3>
+                {%- endif -%}
+                
+                {%- if block.settings.description != blank -%}
+                  <p class="custom-block-description">{{ block.settings.description | escape }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+            
+          {%- if block.settings.url != blank -%}
+            </a>
+          {%- else -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="swiper-button-container">
+      {%- if section.settings.show_navigation -%}
+        <button class="swiper-button-prev" onclick="swipeLeft('{{ section.id }}')">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+      {%- endif -%}
+      
+      {%- if section.settings.show_dots -%}
+        <div class="swiper-pagination" id="pagination-{{ section.id }}"></div>
+      {%- endif -%}
+      
+      {%- if section.settings.show_navigation -%}
+        <button class="swiper-button-next" onclick="swipeRight('{{ section.id }}')">
+          <svg viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+        </button>
+      {%- endif -%}
+    </div>
+    
+  </div>
+  
+  <script>
+    (function() {
+      const sectionId = '{{ section.id }}';
+      const container = document.getElementById(`swiper-${sectionId}`);
+      const pagination = document.getElementById(`pagination-${sectionId}`);
+      const slides = container.querySelectorAll('.custom-block-slide');
+      const totalSlides = slides.length;
+      
+      let currentIndex = 0;
+      let slidesToShow = 1;
+      
+      function updateSlidesToShow() {
+        if (window.innerWidth >= 1200) {
+          slidesToShow = Math.min(4, totalSlides);
+        } else if (window.innerWidth >= 990) {
+          slidesToShow = Math.min(3, totalSlides);
+        } else if (window.innerWidth >= 750) {
+          slidesToShow = Math.min(2, totalSlides);
+        } else {
+          slidesToShow = 1;
+        }
+      }
+      
+      function updateSlidePosition() {
+        const slideWidth = 100 / slidesToShow;
+        const translateX = -(currentIndex * slideWidth);
+        container.style.transform = `translateX(${translateX}%)`;
+        
+        if (pagination) {
+          updatePagination();
+        }
+      }
+      
+      function createPagination() {
+        if (!pagination) return;
+        
+        const maxIndex = Math.max(0, totalSlides - slidesToShow);
+        pagination.innerHTML = '';
+        
+        for (let i = 0; i <= maxIndex; i++) {
+          const bullet = document.createElement('span');
+          bullet.className = `swiper-pagination-bullet ${i === currentIndex ? 'swiper-pagination-bullet-active' : ''}`;
+          bullet.onclick = () => goToSlide(i);
+          pagination.appendChild(bullet);
+        }
+      }
+      
+      function updatePagination() {
+        if (!pagination) return;
+        
+        const bullets = pagination.querySelectorAll('.swiper-pagination-bullet');
+        bullets.forEach((bullet, index) => {
+          bullet.classList.toggle('swiper-pagination-bullet-active', index === currentIndex);
+        });
+      }
+      
+      function goToSlide(index) {
+        const maxIndex = Math.max(0, totalSlides - slidesToShow);
+        currentIndex = Math.max(0, Math.min(index, maxIndex));
+        updateSlidePosition();
+      }
+      
+      window.swipeLeft = function(id) {
+        if (id === sectionId) {
+          goToSlide(currentIndex - 1);
+        }
+      };
+      
+      window.swipeRight = function(id) {
+        if (id === sectionId) {
+          goToSlide(currentIndex + 1);
+        }
+      };
+      
+      function init() {
+        updateSlidesToShow();
+        goToSlide(0);
+        createPagination();
+      }
+      
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(init, 150);
+      });
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+      
+      let startX = 0;
+      let isDragging = false;
+      
+      container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        isDragging = true;
+      });
+      
+      container.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+      });
+      
+      container.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        const endX = e.changedTouches[0].clientX;
+        const diffX = startX - endX;
+        
+        if (Math.abs(diffX) > 50) {
+          if (diffX > 0) {
+            swipeRight(sectionId);
+          } else {
+            swipeLeft(sectionId);
+          }
+        }
+      });
+    })();
+  </script>
+  
+  {% schema %}
+  {
+    "name": "Custom Block Swiper",
+    "tag": "section",
+    "class": "section",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Navigation Settings"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "title",
+        "default": "Slider Title",
+        "label": "Heading"
+      },
+      {
+        "type": "range",
+        "id": "heading_size",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Heading size",
+        "default": 36
+      },
+      {
+        "type": "select",
+        "id": "heading_alignment",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          }
+        ],
+        "default": "center",
+        "label": "Heading Alignment"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_navigation",
+        "label": "Show navigation arrows",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_dots",
+        "label": "Show pagination dots",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Section Settings"
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Padding top",
+        "default": 36
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Padding bottom",
+        "default": 36
+      }
+    ],
+    "blocks": [
+      {
+        "type": "custom_block",
+        "name": "Custom Block",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Block Title"
+          },
+          {
+            "type": "textarea",
+            "id": "description",
+            "label": "Description",
+            "default": "Add your block description here."
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Link URL",
+            "info": "Link to metaobject product or custom URL"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Custom Block Swiper",
+        "blocks": [
+          {
+            "type": "custom_block"
+          },
+          {
+            "type": "custom_block"
+          },
+          {
+            "type": "custom_block"
+          },
+          {
+            "type": "custom_block"
+          }
+        ]
+      }
+    ]
+  }
+  {% endschema %}
