@@ -702,40 +702,6 @@
       
       {% for block in section.blocks %}
         
-        {% if block.type == 'variant_section' %}
-          <div class="product-section">
-            <h3 class="section-title">Model. Which is best for you?</h3>
-            <div class="variant-grid">
-              {% assign variant_blocks = section.blocks | where: 'type', 'variant_option' %}
-              {% for variant_block in variant_blocks %}
-                <div class="variant-option" data-variant="{{ variant_block.id }}">
-                  <h4 class="variant-name">{{ variant_block.settings.variant_name }}</h4>
-                  <p class="variant-price">{{ variant_block.settings.variant_price }}</p>
-                  {% if variant_block.settings.variant_description != blank %}
-                    <p style="font-size: 12px; color: #86868b; margin: 5px 0 0 0;">{{ variant_block.settings.variant_description }}</p>
-                  {% endif %}
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-        {% endif %}
-        
-        {% if block.type == 'color_section' %}
-          <div class="product-section">
-            <h3 class="section-title">Finish. Pick your favorite.</h3>
-            <div class="color-options">
-              {% assign color_blocks = section.blocks | where: 'type', 'color_option' %}
-              {% for color_block in color_blocks %}
-                <div 
-                  class="color-option" 
-                  style="background: {{ color_block.settings.color_value | default: '#000' }};"
-                  data-color="{{ color_block.id }}"
-                  title="{{ color_block.settings.color_name }}">
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-        {% endif %}
 
         {% if block.type == 'distance_material' %}
           <div class="distance-material-block" id="distance-material-{{ block.id }}">
@@ -795,20 +761,6 @@
           </div>
         {% endif %}
         
-        {% if block.type == 'features_section' %}
-          <div class="product-section">
-            <h3 class="section-title">Key Features</h3>
-            <ul class="feature-list">
-              {% assign features = section.settings.features | newline_to_br | split: '<br />' %}
-              {% for feature in features %}
-                {% if feature != blank %}
-                  <li>{{ feature | strip }}</li>
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
-        
         {% if block.type == 'custom_content' %}
           <div class="product-section">
             {% if block.settings.title != blank %}
@@ -824,11 +776,6 @@
         
       {% endfor %}
       
-      <div class="add-to-cart-section">
-        <button class="add-to-cart-btn" type="button">
-          Add to Bag
-        </button>
-      </div>
     </div>
   </div>
 </div>
@@ -1304,13 +1251,6 @@ document.addEventListener('DOMContentLoaded', function() {
       "id": "product_price",
       "label": "Product Price",
       "default": "From $999"
-    },
-    {
-      "type": "textarea",
-      "id": "features",
-      "label": "Key Features",
-      "info": "Enter each feature on a new line",
-      "default": "6.3″ or 6.9″ Super Retina XDR display with ProMotion\nA18 Pro chip with 6-core GPU\nAdvanced camera system with 5x Telephoto\nAction button and Camera Control\nUp to 33 hours video playback"
     }
   ],
   "blocks": [
@@ -1332,58 +1272,6 @@ document.addEventListener('DOMContentLoaded', function() {
       ]
     },
     {
-      "type": "variant_section",
-      "name": "Variant Section",
-      "settings": []
-    },
-    {
-      "type": "variant_option",
-      "name": "Product Variant",
-      "settings": [
-        {
-          "type": "text",
-          "id": "variant_name",
-          "label": "Variant Name",
-          "default": "iPhone 16 Pro"
-        },
-        {
-          "type": "text",
-          "id": "variant_price",
-          "label": "Variant Price",
-          "default": "From $999"
-        },
-        {
-          "type": "text",
-          "id": "variant_description",
-          "label": "Variant Description",
-          "default": "6.3″ display"
-        }
-      ]
-    },
-    {
-      "type": "color_section",
-      "name": "Color Section",
-      "settings": []
-    },
-    {
-      "type": "color_option",
-      "name": "Color Option",
-      "settings": [
-        {
-          "type": "text",
-          "id": "color_name",
-          "label": "Color Name",
-          "default": "Natural Titanium"
-        },
-        {
-          "type": "color",
-          "id": "color_value",
-          "label": "Color",
-          "default": "#8B7355"
-        }
-      ]
-    },
-    {
       "type": "distance_material",
       "name": "Distance & Material",
       "settings": [
@@ -1395,27 +1283,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       ]
     },
-    {
-      "type": "features_section",
-      "name": "Features Section",
-      "settings": []
-    },
-    {
-      "type": "custom_content",
-      "name": "Custom Content",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Section Title"
-        },
-        {
-          "type": "richtext",
-          "id": "content",
-          "label": "Content"
-        }
-      ]
-    }
   ],
   "presets": [
     {
@@ -1431,60 +1298,7 @@ document.addEventListener('DOMContentLoaded', function() {
           "type": "product_image"
         },
         {
-          "type": "variant_section"
-        },
-        {
-          "type": "variant_option",
-          "settings": {
-            "variant_name": "iPhone 16 Pro",
-            "variant_price": "From $999",
-            "variant_description": "6.3″ display"
-          }
-        },
-        {
-          "type": "variant_option",
-          "settings": {
-            "variant_name": "iPhone 16 Pro Max",
-            "variant_price": "From $1199",
-            "variant_description": "6.9″ display"
-          }
-        },
-        {
-          "type": "color_section"
-        },
-        {
-          "type": "color_option",
-          "settings": {
-            "color_name": "Natural Titanium",
-            "color_value": "#8B7355"
-          }
-        },
-        {
-          "type": "color_option",
-          "settings": {
-            "color_name": "Blue Titanium",
-            "color_value": "#4A5F7A"
-          }
-        },
-        {
-          "type": "color_option",
-          "settings": {
-            "color_name": "White Titanium",
-            "color_value": "#F8F8F8"
-          }
-        },
-        {
-          "type": "color_option",
-          "settings": {
-            "color_name": "Black Titanium",
-            "color_value": "#1D1D1F"
-          }
-        },
-        {
           "type": "distance_material"
-        },
-        {
-          "type": "features_section"
         }
       ]
     }
