@@ -1,0 +1,1493 @@
+<style>
+  .apple-product-section {
+    min-height: 100vh;
+    position: relative;
+  }
+  
+  .product-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    gap: 60px;
+  }
+  
+  .product-images {
+    flex: 1;
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+    max-height: calc(100vh - 160px);
+  }
+  
+  .image-carousel {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f5f5f7;
+  }
+  
+  .carousel-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .carousel-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .carousel-slide {
+    width: 100%;
+    flex-shrink: 0;
+    position: relative; 
+  }
+  
+  .carousel-slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .image-overlay.measurement-active {
+    pointer-events: all;
+    cursor: crosshair;
+  }
+  
+  .carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+  
+  .image-carousel:hover .carousel-nav {
+    opacity: 1;
+  }
+  
+  .carousel-nav:hover {
+    background: rgba(255, 255, 255, 1);
+  }
+  
+  .carousel-nav.prev {
+    left: 20px;
+  }
+  
+  .carousel-nav.next {
+    right: 20px;
+  }
+  
+  .carousel-nav svg {
+    width: 20px;
+    height: 20px;
+    fill: #1d1d1f;
+  }
+  
+  .carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  
+  .indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d2d2d7;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .indicator.active {
+    background: #007aff;
+  }
+  
+  .product-details {
+    flex: 1;
+    min-height: 150vh;
+  }
+  
+  .product-header {
+    margin-bottom: 30px;
+  }
+  
+  .product-title {
+    font-size: 48px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 10px 0;
+    line-height: 1.1;
+  }
+  
+  .product-subtitle {
+    font-size: 24px;
+    color: #86868b;
+    margin: 0 0 20px 0;
+  }
+  
+  .product-price {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0;
+  }
+  
+  .product-section {
+    margin: 50px 0;
+    padding: 40px 0;
+    border-bottom: 1px solid #d2d2d7;
+  }
+  
+  .product-section:last-child {
+    border-bottom: none;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 30px 0;
+  }
+  
+  .variant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .variant-option {
+    border: 2px solid #d2d2d7;
+    border-radius: 12px;
+    padding: 20px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  
+  .variant-option:hover {
+    border-color: #007aff;
+    transform: translateY(-2px);
+  }
+  
+  .variant-option.selected {
+    border-color: #007aff;
+    background: #f0f8ff;
+  }
+  
+  .variant-name {
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 5px 0;
+    font-size: 16px;
+  }
+  
+  .variant-price {
+    color: #86868b;
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .color-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .color-option {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .color-option::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid #d2d2d7;
+    transition: border-color 0.3s ease;
+  }
+  
+  .color-option:hover::before,
+  .color-option.selected::before {
+    border-color: #1d1d1f;
+  }
+  
+  .add-to-cart-section {
+    margin: 60px 0;
+    padding: 40px;
+    background: #f5f5f7;
+    border-radius: 20px;
+  }
+  
+  .add-to-cart-btn {
+    width: 100%;
+    background: #007aff;
+    color: white;
+    border: none;
+    padding: 18px 32px;
+    border-radius: 980px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .add-to-cart-btn:hover {
+    background: #0056d6;
+  }
+  
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .feature-list li {
+    padding: 10px 0;
+    color: #1d1d1f;
+    position: relative;
+    padding-left: 20px;
+  }
+  
+  .feature-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #007aff;
+    font-weight: bold;
+  }
+
+  .distance-material-block {
+    margin: 50px 0;
+    padding: 40px;
+    background: #f5f5f7;
+    border-radius: 20px;
+  }
+  
+  .block-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 30px 0;
+    text-align: center;
+  }
+  
+  .measurement-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+  }
+
+  .toggle-label {
+    font-weight: 600;
+    color: #1d1d1f;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 32px;
+    background: #d2d2d7;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .toggle-switch.active {
+    background: #007aff;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 28px;
+    height: 28px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .toggle-switch.active .toggle-slider {
+    transform: translateX(28px);
+  }
+
+  .controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  
+  .distance-controls {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+  }
+  
+  .distance-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 20px 0;
+  }
+  
+  .coordinate-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .input-group {
+    position: relative;
+  }
+  
+  .input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #86868b;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .coordinate-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #d2d2d7;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    background: #f5f5f7;
+    transition: all 0.3s ease;
+  }
+  
+  .coordinate-input:focus {
+    outline: none;
+    border-color: #007aff;
+    background: white;
+  }
+  
+  .add-circle-btn {
+    width: 100%;
+    background: #007aff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-bottom: 20px;
+  }
+  
+  .add-circle-btn:hover {
+    background: #0056d6;
+  }
+
+  .add-circle-btn:disabled {
+    background: #d2d2d7;
+    cursor: not-allowed;
+  }
+  
+  .circle-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .circle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #f5f5f7;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  
+  .circle-coords {
+    color: #1d1d1f;
+    font-weight: 500;
+  }
+  
+  .delete-circle {
+    background: #ff3b30;
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .material-selection {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+  
+  .materials-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .material-option {
+    padding: 16px 20px;
+    border: 2px solid #d2d2d7;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: white;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .material-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 122, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .material-option:hover {
+    border-color: #007aff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.15);
+  }
+  
+  .material-option:hover::before {
+    left: 100%;
+  }
+  
+  .material-option.selected {
+    border-color: #007aff;
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.2);
+  }
+  
+  .material-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: #007aff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .material-name {
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 4px 0;
+    font-size: 14px;
+  }
+  
+  .material-description {
+    color: #86868b;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  
+  .submit-btn {
+    background: linear-gradient(135deg, #007aff, #0056d6);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+    width: 100%;
+  }
+  
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4);
+  }
+  
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .circle-marker {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 3px solid #007aff;
+    border-radius: 50%;
+    {% comment %} background: rgba(0, 122, 255, 0.15); {% endcomment %}
+    cursor: move;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    z-index: 6;
+  }
+  
+  .circle-marker:hover {
+    border-width: 4px;
+    background: rgba(0, 122, 255, 0.25);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  
+  .circle-marker.dragging {
+    z-index: 1000;
+    border-color: #ff3b30;
+    background: rgba(255, 59, 48, 0.25);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+
+  .circle-marker.selected {
+    border-color: #ff3b30;
+    {% comment %} background: rgba(255, 59, 48, 0.2); {% endcomment %}
+  }
+  
+  @media (max-width: 768px) {
+    .product-container {
+      flex-direction: column;
+      gap: 30px;
+      padding: 20px;
+    }
+    
+    .product-images {
+      position: relative;
+      top: 0;
+      max-height: none;
+    }
+    
+    .product-details {
+      min-height: auto;
+    }
+    
+    .product-title {
+      font-size: 32px;
+    }
+    
+    .variant-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .controls-container {
+      max-width: none;
+    }
+    
+    .coordinate-inputs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="apple-product-section">
+  <div class="product-container">
+    <div class="product-images">
+      <div class="image-carousel" id="main-carousel">
+        <div class="carousel-container">
+          <div class="carousel-track" id="carousel-track">
+            {% if section.blocks.size > 0 %}
+              {% assign image_blocks = section.blocks | where: 'type', 'product_image' %}
+              {% if image_blocks.size > 0 %}
+                {% for block in image_blocks %}
+                  <div class="carousel-slide" data-slide-index="{{ forloop.index0 }}">
+                    {% if block.settings.image != blank %}
+                      {{ block.settings.image | image_url: width: 600 | image_tag: alt: block.settings.alt_text }}
+                    {% else %}
+                      <div style="aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
+                        Product Image
+                      </div>
+                    {% endif %}
+                    <div class="image-overlay" data-slide="{{ forloop.index0 }}"></div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                {% for i in (1..3) %}
+                  <div class="carousel-slide" data-slide-index="{{ forloop.index0 }}">
+                    <div style="aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
+                      Product Image {{ i }}
+                    </div>
+                    <div class="image-overlay" data-slide="{{ forloop.index0 }}"></div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% else %}
+              {% for i in (1..3) %}
+                <div class="carousel-slide" data-slide-index="{{ forloop.index0 }}">
+                  <div style="aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
+                    Product Image {{ i }}
+                  </div>
+                  <div class="image-overlay" data-slide="{{ forloop.index0 }}"></div>
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+        
+        <button class="carousel-nav prev" id="prev-btn">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+        <button class="carousel-nav next" id="next-btn">
+          <svg viewBox="0 0 24 24">
+            <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+          </svg>
+        </button>
+        
+        <div class="carousel-indicators" id="indicators">
+        </div>
+      </div>
+    </div>
+    
+    <div class="product-details">
+      <div class="product-header">
+        <h1 class="product-title">{{ section.settings.product_title | default: "iPhone 16 Pro" }}</h1>
+        <p class="product-subtitle">{{ section.settings.product_subtitle | default: "Titanium. So strong. So light. So Pro." }}</p>
+        <p class="product-price">{{ section.settings.product_price | default: "From $999" }}</p>
+      </div>
+      
+      {% for block in section.blocks %}
+        
+        {% if block.type == 'variant_section' %}
+          <div class="product-section">
+            <h3 class="section-title">Model. Which is best for you?</h3>
+            <div class="variant-grid">
+              {% assign variant_blocks = section.blocks | where: 'type', 'variant_option' %}
+              {% for variant_block in variant_blocks %}
+                <div class="variant-option" data-variant="{{ variant_block.id }}">
+                  <h4 class="variant-name">{{ variant_block.settings.variant_name }}</h4>
+                  <p class="variant-price">{{ variant_block.settings.variant_price }}</p>
+                  {% if variant_block.settings.variant_description != blank %}
+                    <p style="font-size: 12px; color: #86868b; margin: 5px 0 0 0;">{{ variant_block.settings.variant_description }}</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if block.type == 'color_section' %}
+          <div class="product-section">
+            <h3 class="section-title">Finish. Pick your favorite.</h3>
+            <div class="color-options">
+              {% assign color_blocks = section.blocks | where: 'type', 'color_option' %}
+              {% for color_block in color_blocks %}
+                <div 
+                  class="color-option" 
+                  style="background: {{ color_block.settings.color_value | default: '#000' }};"
+                  data-color="{{ color_block.id }}"
+                  title="{{ color_block.settings.color_name }}">
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if block.type == 'distance_material' %}
+          <div class="distance-material-block" id="distance-material-{{ block.id }}">
+            <h3 class="block-title">{{ block.settings.block_title | default: "Distance for Circle" }}</h3>
+            
+            <div class="measurement-toggle">
+              <span class="toggle-label">Measurement Mode</span>
+              <div class="toggle-switch" id="measurement-toggle-{{ block.id }}">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            
+            <div class="controls-container">
+              <div class="distance-controls">
+                <h4 class="distance-title">Coordinates</h4>
+                <div class="coordinate-inputs">
+                  <div class="input-group">
+                    <label class="input-label">X</label>
+                    <input type="number" class="coordinate-input" id="x-input-{{ block.id }}" placeholder="0" min="0">
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">Y</label>
+                    <input type="number" class="coordinate-input" id="y-input-{{ block.id }}" placeholder="0" min="0">
+                  </div>
+                </div>
+                <button class="add-circle-btn" id="add-circle-{{ block.id }}" disabled>Add Circle</button>
+                <div class="circle-list" id="circle-list-{{ block.id }}"></div>
+              </div>
+              
+              <div class="material-selection">
+                <h4 class="distance-title">Material Selection</h4>
+                <div class="materials-grid" id="materials-{{ block.id }}">
+                  <div class="material-option" data-material="aluminum">
+                    <div class="material-name">Aluminum</div>
+                    <div class="material-description">Lightweight and corrosion resistant</div>
+                  </div>
+                  <div class="material-option" data-material="steel">
+                    <div class="material-name">Steel</div>
+                    <div class="material-description">High strength and durability</div>
+                  </div>
+                  <div class="material-option" data-material="titanium">
+                    <div class="material-name">Titanium</div>
+                    <div class="material-description">Superior strength-to-weight ratio</div>
+                  </div>
+                  <div class="material-option" data-material="carbon-fiber">
+                    <div class="material-name">Carbon Fiber</div>
+                    <div class="material-description">Ultra-lightweight composite material</div>
+                  </div>
+                  <div class="material-option" data-material="copper">
+                    <div class="material-name">Copper</div>
+                    <div class="material-description">Excellent thermal and electrical conductivity</div>
+                  </div>
+                </div>
+                <button class="submit-btn" id="submit-{{ block.id }}">Submit Data</button>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if block.type == 'features_section' %}
+          <div class="product-section">
+            <h3 class="section-title">Key Features</h3>
+            <ul class="feature-list">
+              {% assign features = section.settings.features | newline_to_br | split: '<br />' %}
+              {% for feature in features %}
+                {% if feature != blank %}
+                  <li>{{ feature | strip }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        
+        {% if block.type == 'custom_content' %}
+          <div class="product-section">
+            {% if block.settings.title != blank %}
+              <h3 class="section-title">{{ block.settings.title }}</h3>
+            {% endif %}
+            {% if block.settings.content != blank %}
+              <div style="color: #1d1d1f; line-height: 1.6;">
+                {{ block.settings.content }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+        
+      {% endfor %}
+      
+      <div class="add-to-cart-section">
+        <button class="add-to-cart-btn" type="button">
+          Add to Bag
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let currentSlide = 0;
+  let totalSlides = 0;
+  
+  const track = document.getElementById('carousel-track');
+  const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const indicatorsContainer = document.getElementById('indicators');
+  
+  if (track && slides.length > 0) {
+    totalSlides = slides.length;
+    
+    for (let i = 0; i < totalSlides; i++) {
+      const indicator = document.createElement('div');
+      indicator.className = `indicator ${i === 0 ? 'active' : ''}`;
+      indicator.addEventListener('click', () => goToSlide(i));
+      indicatorsContainer.appendChild(indicator);
+    }
+    
+    const indicators = indicatorsContainer.querySelectorAll('.indicator');
+    
+    function updateCarousel() {
+      const translateX = -currentSlide * 100;
+      track.style.transform = `translateX(${translateX}%)`;
+      
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentSlide);
+      });
+
+      updateCircleVisibility();
+    }
+    
+    function goToSlide(slideIndex) {
+      currentSlide = slideIndex;
+      updateCarousel();
+    }
+    
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+    }
+    
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+    
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
+    let startX = 0;
+    let isDragging = false;
+    
+    track.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+    });
+    
+    track.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+    });
+    
+    track.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+      
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+      
+      isDragging = false;
+    });
+  }
+  
+  const variantOptions = document.querySelectorAll('.variant-option');
+  variantOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      variantOptions.forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+  
+  const colorOptions = document.querySelectorAll('.color-option');
+  colorOptions.forEach(option => {
+    option.addEventListener('click', function() {
+      colorOptions.forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  function initDistanceMaterial(blockId) {
+    const measurementToggle = document.getElementById(`measurement-toggle-${blockId}`);
+    const xInput = document.getElementById(`x-input-${blockId}`);
+    const yInput = document.getElementById(`y-input-${blockId}`);
+    const addCircleBtn = document.getElementById(`add-circle-${blockId}`);
+    const circleList = document.getElementById(`circle-list-${blockId}`);
+    const materialsContainer = document.getElementById(`materials-${blockId}`);
+    const submitBtn = document.getElementById(`submit-${blockId}`);
+    const imageOverlays = document.querySelectorAll('.image-overlay');
+    
+    if (!measurementToggle) return; 
+    
+    let circles = [];
+    let selectedMaterial = null;
+    let circleCounter = 0;
+    let isDraggingCircle = false;
+    let draggedCircle = null;
+    let selectedCircle = null;
+    let measurementMode = false;
+
+    window.updateCircleVisibility = function() {
+      circles.forEach(circle => {
+        if (circle.slideIndex === currentSlide) {
+          circle.element.style.display = 'flex';
+        } else {
+          circle.element.style.display = 'none';
+        }
+      });
+    };
+    
+    measurementToggle.addEventListener('click', function() {
+      measurementMode = !measurementMode;
+      measurementToggle.classList.toggle('active', measurementMode);
+      addCircleBtn.disabled = !measurementMode;
+      
+      imageOverlays.forEach(overlay => {
+        if (measurementMode) {
+          overlay.classList.add('measurement-active');
+        } else {
+          overlay.classList.remove('measurement-active');
+        }
+      });
+    });
+
+    materialsContainer.addEventListener('click', function(e) {
+      const materialOption = e.target.closest('.material-option');
+      if (materialOption) {
+        materialsContainer.querySelectorAll('.material-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        
+        materialOption.classList.add('selected');
+        selectedMaterial = materialOption.dataset.material;
+      }
+    });
+    
+    function addCircle(x, y, slideIndex = currentSlide) {
+      const circle = {
+        id: ++circleCounter,
+        x: x,
+        y: y,
+        slideIndex: slideIndex,
+        element: null
+      };
+      
+      const circleElement = document.createElement('div');
+      circleElement.className = 'circle-marker';
+      circleElement.style.left = x + 'px';
+      circleElement.style.top = y + 'px';
+      circleElement.dataset.circleId = circle.id;
+      
+      const currentOverlay = document.querySelector(`.image-overlay[data-slide="${slideIndex}"]`);
+      if (currentOverlay) {
+        currentOverlay.appendChild(circleElement);
+        circle.element = circleElement;
+        circles.push(circle);
+        
+        addDragFunctionality(circleElement, circle);
+        
+        updateCircleList();
+        
+        selectCircle(circle);
+        
+        updateCircleVisibility();
+      }
+      
+      return circle;
+    }
+    
+    function checkCollision(x, y, slideIndex, excludeId) {
+      const minDistance = 60; 
+      
+      return circles.some(circle => {
+        if (circle.id === excludeId || circle.slideIndex !== slideIndex) return false;
+        const distance = Math.sqrt(Math.pow(circle.x - x, 2) + Math.pow(circle.y - y, 2));
+        return distance < minDistance;
+      });
+    }
+    
+    function addDragFunctionality(element, circle) {
+      let startX, startY, initialX, initialY;
+      
+      element.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        isDraggingCircle = true;
+        draggedCircle = circle;
+        element.classList.add('dragging');
+        
+        const overlay = element.closest('.image-overlay');
+        const rect = overlay.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        initialX = circle.x;
+        initialY = circle.y;
+        
+        selectCircle(circle);
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+      
+      function onMouseMove(e) {
+        if (!isDraggingCircle || draggedCircle !== circle) return;
+        
+        const overlay = element.closest('.image-overlay');
+        const rect = overlay.getBoundingClientRect();
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+        
+        let newX = initialX + deltaX;
+        let newY = initialY + deltaY;
+        
+        newX = Math.max(30, Math.min(rect.width - 30, newX));
+        newY = Math.max(30, Math.min(rect.height - 30, newY));
+        
+        if (!checkCollision(newX, newY, circle.slideIndex, circle.id)) {
+          circle.x = newX;
+          circle.y = newY;
+          element.style.left = newX + 'px';
+          element.style.top = newY + 'px';
+          
+          updateInputs(circle);
+          updateCircleList();
+        }
+      }
+      
+      function onMouseUp() {
+        if (draggedCircle === circle) {
+          isDraggingCircle = false;
+          draggedCircle = null;
+          element.classList.remove('dragging');
+        }
+        
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+      
+      element.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (!isDraggingCircle) {
+          selectCircle(circle);
+        }
+      });
+    }
+    
+    function selectCircle(circle) {
+      circles.forEach(c => {
+        c.element.classList.remove('selected');
+      });
+      
+      circle.element.classList.add('selected');
+      selectedCircle = circle;
+      
+      updateInputs(circle);
+    }
+    
+    function updateInputs(circle) {
+      if (circle) {
+        xInput.value = Math.round(circle.x);
+        yInput.value = Math.round(circle.y);
+      }
+    }
+    
+    function updateCircleList() {
+      circleList.innerHTML = '';
+      
+      const circlesBySlide = {};
+      circles.forEach(circle => {
+        if (!circlesBySlide[circle.slideIndex]) {
+          circlesBySlide[circle.slideIndex] = [];
+        }
+        circlesBySlide[circle.slideIndex].push(circle);
+      });
+      
+      Object.keys(circlesBySlide).forEach(slideIndex => {
+        const slideCircles = circlesBySlide[slideIndex];
+        
+        const slideHeader = document.createElement('div');
+        slideHeader.innerHTML = `<small style="color: #86868b; font-weight: 600;">Image ${parseInt(slideIndex) + 1}</small>`;
+        slideHeader.style.marginBottom = '8px';
+        slideHeader.style.marginTop = slideIndex > 0 ? '16px' : '0';
+        circleList.appendChild(slideHeader);
+        
+        slideCircles.forEach(circle => {
+          const item = document.createElement('div');
+          item.className = 'circle-item';
+          
+          const overlay = document.querySelector(`.image-overlay[data-slide="${circle.slideIndex}"]`);
+          const rect = overlay ? overlay.getBoundingClientRect() : { width: 600, height: 600 };
+          const percentX = ((circle.x / rect.width) * 100).toFixed(1);
+          const percentY = ((circle.y / rect.height) * 100).toFixed(1);
+          
+          item.innerHTML = `
+            <span class="circle-coords">
+              Circle ${circle.id}: (${Math.round(circle.x)}px, ${Math.round(circle.y)}px)
+              <br><small>${percentX}%, ${percentY}%</small>
+            </span>
+            <button class="delete-circle" onclick="window.deleteCircle_${blockId}(${circle.id})">×</button>
+          `;
+          
+          circleList.appendChild(item);
+        });
+      });
+    }
+    
+    window[`deleteCircle_${blockId}`] = function(circleId) {
+      const circleIndex = circles.findIndex(c => c.id === circleId);
+      if (circleIndex !== -1) {
+        const circle = circles[circleIndex];
+        circle.element.remove();
+        circles.splice(circleIndex, 1);
+        updateCircleList();
+        
+        if (selectedCircle && selectedCircle.id === circleId) {
+          selectedCircle = null;
+          xInput.value = '';
+          yInput.value = '';
+        }
+      }
+    };
+    
+    addCircleBtn.addEventListener('click', function() {
+      if (!measurementMode) return;
+      
+      const x = parseInt(xInput.value) || 100;
+      const y = parseInt(yInput.value) || 100;
+      
+      const currentOverlay = document.querySelector(`.image-overlay[data-slide="${currentSlide}"]`);
+      if (!currentOverlay) return;
+      
+      const rect = currentOverlay.getBoundingClientRect();
+      const constrainedX = Math.max(30, Math.min(rect.width - 30, x));
+      const constrainedY = Math.max(30, Math.min(rect.height - 30, y));
+      
+      if (!checkCollision(constrainedX, constrainedY, currentSlide)) {
+        addCircle(constrainedX, constrainedY, currentSlide);
+      } else {
+        alert('Cannot place circle here - too close to another circle!');
+      }
+    });
+    
+    imageOverlays.forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (!measurementMode || isDraggingCircle) return;
+        
+        const slideIndex = parseInt(this.dataset.slide);
+        if (slideIndex !== currentSlide) return; 
+        
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        if (!checkCollision(x, y, slideIndex)) {
+          addCircle(x, y, slideIndex);
+        }
+      });
+    });
+    
+    xInput.addEventListener('input', updateFromInputs);
+    yInput.addEventListener('input', updateFromInputs);
+    
+    function updateFromInputs() {
+      if (selectedCircle && measurementMode) {
+        const x = parseInt(xInput.value) || 0;
+        const y = parseInt(yInput.value) || 0;
+        
+        const overlay = selectedCircle.element.closest('.image-overlay');
+        const rect = overlay.getBoundingClientRect();
+        const constrainedX = Math.max(30, Math.min(rect.width - 30, x));
+        const constrainedY = Math.max(30, Math.min(rect.height - 30, y));
+        
+        if (!checkCollision(constrainedX, constrainedY, selectedCircle.slideIndex, selectedCircle.id)) {
+          selectedCircle.x = constrainedX;
+          selectedCircle.y = constrainedY;
+          selectedCircle.element.style.left = constrainedX + 'px';
+          selectedCircle.element.style.top = constrainedY + 'px';
+          updateCircleList();
+        }
+      }
+    }
+    
+    submitBtn.addEventListener('click', function() {
+      const outputData = {
+        blockId: blockId,
+        circles: circles.map(circle => {
+          const overlay = circle.element.closest('.image-overlay');
+          const rect = overlay.getBoundingClientRect();
+          
+          return {
+            id: circle.id,
+            slideIndex: circle.slideIndex,
+            coordinates: {
+              pixels: {
+                x: Math.round(circle.x),
+                y: Math.round(circle.y)
+              },
+              percentage: {
+                x: parseFloat(((circle.x / rect.width) * 100).toFixed(2)),
+                y: parseFloat(((circle.y / rect.height) * 100).toFixed(2))
+              }
+            }
+          };
+        }),
+        selectedMaterial: selectedMaterial,
+        currentSlide: currentSlide,
+        totalSlides: totalSlides,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('Distance & Material Selection Data:', outputData);
+      
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'distance_material_submission',
+          data: outputData
+        });
+      }
+      
+      alert(`Data submitted! Check console for details.\n\nTotal Circles: ${circles.length}\nMaterial: ${selectedMaterial || 'None selected'}\nCurrent Image: ${currentSlide + 1}/${totalSlides}`);
+    });
+  }
+
+  const distanceBlocks = document.querySelectorAll('[id^="distance-material-"]');
+  distanceBlocks.forEach(block => {
+    const blockId = block.id.replace('distance-material-', '');
+    initDistanceMaterial(blockId);
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Product Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "product_title",
+      "label": "Product Title",
+      "default": "iPhone 16 Pro"
+    },
+    {
+      "type": "text",
+      "id": "product_subtitle",
+      "label": "Product Subtitle",
+      "default": "Titanium. So strong. So light. So Pro."
+    },
+    {
+      "type": "text",
+      "id": "product_price",
+      "label": "Product Price",
+      "default": "From $999"
+    },
+    {
+      "type": "textarea",
+      "id": "features",
+      "label": "Key Features",
+      "info": "Enter each feature on a new line",
+      "default": "6.3″ or 6.9″ Super Retina XDR display with ProMotion\nA18 Pro chip with 6-core GPU\nAdvanced camera system with 5x Telephoto\nAction button and Camera Control\nUp to 33 hours video playback"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_image",
+      "name": "Product Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt Text",
+          "default": "Product Image"
+        }
+      ]
+    },
+    {
+      "type": "variant_section",
+      "name": "Variant Section",
+      "settings": []
+    },
+    {
+      "type": "variant_option",
+      "name": "Product Variant",
+      "settings": [
+        {
+          "type": "text",
+          "id": "variant_name",
+          "label": "Variant Name",
+          "default": "iPhone 16 Pro"
+        },
+        {
+          "type": "text",
+          "id": "variant_price",
+          "label": "Variant Price",
+          "default": "From $999"
+        },
+        {
+          "type": "text",
+          "id": "variant_description",
+          "label": "Variant Description",
+          "default": "6.3″ display"
+        }
+      ]
+    },
+    {
+      "type": "color_section",
+      "name": "Color Section",
+      "settings": []
+    },
+    {
+      "type": "color_option",
+      "name": "Color Option",
+      "settings": [
+        {
+          "type": "text",
+          "id": "color_name",
+          "label": "Color Name",
+          "default": "Natural Titanium"
+        },
+        {
+          "type": "color",
+          "id": "color_value",
+          "label": "Color",
+          "default": "#8B7355"
+        }
+      ]
+    },
+    {
+      "type": "distance_material",
+      "name": "Distance & Material",
+      "settings": [
+        {
+          "type": "text",
+          "id": "block_title",
+          "label": "Block Title",
+          "default": "Distance for Circle"
+        }
+      ]
+    },
+    {
+      "type": "features_section",
+      "name": "Features Section",
+      "settings": []
+    },
+    {
+      "type": "custom_content",
+      "name": "Custom Content",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Section Title"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Section",
+      "blocks": [
+        {
+          "type": "product_image"
+        },
+        {
+          "type": "product_image"
+        },
+        {
+          "type": "product_image"
+        },
+        {
+          "type": "variant_section"
+        },
+        {
+          "type": "variant_option",
+          "settings": {
+            "variant_name": "iPhone 16 Pro",
+            "variant_price": "From $999",
+            "variant_description": "6.3″ display"
+          }
+        },
+        {
+          "type": "variant_option",
+          "settings": {
+            "variant_name": "iPhone 16 Pro Max",
+            "variant_price": "From $1199",
+            "variant_description": "6.9″ display"
+          }
+        },
+        {
+          "type": "color_section"
+        },
+        {
+          "type": "color_option",
+          "settings": {
+            "color_name": "Natural Titanium",
+            "color_value": "#8B7355"
+          }
+        },
+        {
+          "type": "color_option",
+          "settings": {
+            "color_name": "Blue Titanium",
+            "color_value": "#4A5F7A"
+          }
+        },
+        {
+          "type": "color_option",
+          "settings": {
+            "color_name": "White Titanium",
+            "color_value": "#F8F8F8"
+          }
+        },
+        {
+          "type": "color_option",
+          "settings": {
+            "color_name": "Black Titanium",
+            "color_value": "#1D1D1F"
+          }
+        },
+        {
+          "type": "distance_material"
+        },
+        {
+          "type": "features_section"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
