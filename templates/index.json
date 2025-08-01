@@ -114,10 +114,55 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "product_8CnP6n": {
+      "type": "product",
+      "blocks": {
+        "product_image_feQQbc": {
+          "type": "product_image",
+          "settings": {
+            "image": "shopify://shop_images/432fc8987db13cfa6de20a2af7e87bca7ee292bd.png",
+            "alt_text": "Product Image"
+          }
+        },
+        "product_image_iCmtha": {
+          "type": "product_image",
+          "settings": {
+            "image": "shopify://shop_images/19447179fa3745585ac5bed38185907057e99709.png",
+            "alt_text": "Product Image"
+          }
+        },
+        "product_image_x9edf6": {
+          "type": "product_image",
+          "settings": {
+            "image": "shopify://shop_images/b0bdc61646cf370478ca1573b472046f01042e4e.png",
+            "alt_text": "Product Image"
+          }
+        },
+        "distance_material_rbiAzy": {
+          "type": "distance_material",
+          "settings": {
+            "block_title": "Distance for Circle"
+          }
+        }
+      },
+      "block_order": [
+        "product_image_feQQbc",
+        "product_image_iCmtha",
+        "product_image_x9edf6",
+        "distance_material_rbiAzy"
+      ],
+      "name": "Product Section",
+      "settings": {
+        "product_title": "iPhone 16 Pro",
+        "product_subtitle": "Titanium. So strong. So light. So Pro.",
+        "product_price": "From $999"
+      }
     }
   },
   "order": [
     "image_banner",
-    "slider_pVUegJ"
+    "slider_pVUegJ",
+    "product_8CnP6n"
   ]
 }
