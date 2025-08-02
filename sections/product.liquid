@@ -6,7 +6,7 @@
   
   .product-container {
     display: flex;
-    max-width: 1200px;
+    {% comment %} max-width: 1200px; {% endcomment %}
     margin: 0 auto;
     padding: 40px 20px;
     gap: 60px;
@@ -16,7 +16,7 @@
     flex: 1;
     position: sticky;
     top: 80px;
-    height: fit-content;
+    height: 600px;
     max-height: calc(100vh - 160px);
   }
   
@@ -25,27 +25,33 @@
     border-radius: 20px;
     overflow: hidden;
     background: #f5f5f7;
+    height: 100%;
+    width: 100%;
   }
   
   .carousel-container {
     position: relative;
     overflow: hidden;
+    height: 100%;
   }
   
   .carousel-track {
     display: flex;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 100%;
   }
   
   .carousel-slide {
     width: 100%;
+    height: 100%;
     flex-shrink: 0;
     position: relative; 
   }
   
   .carousel-slide img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
     display: block;
   }
 
@@ -348,16 +354,16 @@
     transform: translateX(28px);
   }
 
-  .controls-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+  .controls-container {
+    max-width: 500px;
+    margin: 0 auto;
   }
   
   .distance-controls {
     background: white;
     padding: 25px;
     border-radius: 16px;
+    margin-bottom: 20px;
   }
   
   .distance-title {
@@ -467,7 +473,6 @@
     background: white;
     padding: 25px;
     border-radius: 16px;
-    margin-top: 10px;
   }
   
   .materials-grid {
@@ -569,7 +574,6 @@
     height: 60px;
     border: 3px solid #007aff;
     border-radius: 50%;
-    {% comment %} background: rgba(0, 122, 255, 0.15); {% endcomment %}
     cursor: move;
     transform: translate(-50%, -50%);
     transition: all 0.2s ease;
@@ -595,10 +599,49 @@
 
   .circle-marker.selected {
     border-color: #ff3b30;
-    {% comment %} background: rgba(255, 59, 48, 0.2); {% endcomment %}
+  }
+
+  /* Product variant selection styles */
+  .product-variants {
+    margin-bottom: 30px;
+  }
+
+  .variant-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .variant-button {
+    padding: 10px 16px;
+    border: 2px solid #d2d2d7;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .variant-button:hover {
+    border-color: #007aff;
+  }
+
+  .variant-button.selected {
+    border-color: #007aff;
+    background: #f0f8ff;
+    color: #007aff;
+  }
+
+  .variant-button.unavailable {
+    background: #f5f5f7;
+    color: #86868b;
+    cursor: not-allowed;
+    text-decoration: line-through;
   }
   
-  @media (max-width: 768px) {
+    @media (max-width: 768px) {
     .product-container {
       flex-direction: column;
       gap: 30px;
@@ -608,6 +651,7 @@
     .product-images {
       position: relative;
       top: 0;
+      height: 400px;
       max-height: none;
     }
     
@@ -639,7 +683,44 @@
       <div class="image-carousel" id="main-carousel">
         <div class="carousel-container">
           <div class="carousel-track" id="carousel-track">
-            {% if section.blocks.size > 0 %}
+            {% comment %} Display product images if product is selected {% endcomment %}
+            {% if section.settings.product != blank %}
+              {% assign selected_product = all_products[section.settings.product] %}
+              
+              {% comment %} First image from product {% endcomment %}
+              {% if selected_product.featured_image %}
+                <div class="carousel-slide" data-slide-index="0">
+                  {{ selected_product.featured_image | image_url: width: 600 | image_tag: alt: selected_product.featured_image.alt }}
+                  <div class="image-overlay" data-slide="0"></div>
+                </div>
+              {% endif %}
+              
+              {% comment %} Additional product images {% endcomment %}
+              {% assign slide_index = 1 %}
+              {% for image in selected_product.images %}
+                {% unless forloop.first %}
+                  <div class="carousel-slide" data-slide-index="{{ slide_index }}">
+                    {{ image | image_url: width: 600 | image_tag: alt: image.alt }}
+                    <div class="image-overlay" data-slide="{{ slide_index }}"></div>
+                  </div>
+                  {% assign slide_index = slide_index | plus: 1 %}
+                {% endunless %}
+              {% endfor %}
+              
+              {% comment %} Additional images from blocks {% endcomment %}
+              {% assign image_blocks = section.blocks | where: 'type', 'product_image' %}
+              {% for block in image_blocks %}
+                {% if block.settings.image != blank %}
+                  <div class="carousel-slide" data-slide-index="{{ slide_index }}">
+                    {{ block.settings.image | image_url: width: 600 | image_tag: alt: block.settings.alt_text }}
+                    <div class="image-overlay" data-slide="{{ slide_index }}"></div>
+                  </div>
+                  {% assign slide_index = slide_index | plus: 1 %}
+                {% endif %}
+              {% endfor %}
+              
+            {% else %}
+              {% comment %} If no product selected, show block images or placeholders {% endcomment %}
               {% assign image_blocks = section.blocks | where: 'type', 'product_image' %}
               {% if image_blocks.size > 0 %}
                 {% for block in image_blocks %}
@@ -647,7 +728,7 @@
                     {% if block.settings.image != blank %}
                       {{ block.settings.image | image_url: width: 600 | image_tag: alt: block.settings.alt_text }}
                     {% else %}
-                      <div style="aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
+                      <div style="width: 100%; height: 100%; aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
                         Product Image
                       </div>
                     {% endif %}
@@ -655,24 +736,16 @@
                   </div>
                 {% endfor %}
               {% else %}
+                {% comment %} Default placeholder images {% endcomment %}
                 {% for i in (1..3) %}
                   <div class="carousel-slide" data-slide-index="{{ forloop.index0 }}">
-                    <div style="aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
+                    <div style="width: 100%; height: 100%; aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
                       Product Image {{ i }}
                     </div>
                     <div class="image-overlay" data-slide="{{ forloop.index0 }}"></div>
                   </div>
                 {% endfor %}
               {% endif %}
-            {% else %}
-              {% for i in (1..3) %}
-                <div class="carousel-slide" data-slide-index="{{ forloop.index0 }}">
-                  <div style="aspect-ratio: 1; background: #f5f5f7; display: flex; align-items: center; justify-content: center; color: #86868b;">
-                    Product Image {{ i }}
-                  </div>
-                  <div class="image-overlay" data-slide="{{ forloop.index0 }}"></div>
-                </div>
-              {% endfor %}
             {% endif %}
           </div>
         </div>
@@ -695,14 +768,43 @@
     
     <div class="product-details">
       <div class="product-header">
-        <h1 class="product-title">{{ section.settings.product_title | default: "iPhone 16 Pro" }}</h1>
-        <p class="product-subtitle">{{ section.settings.product_subtitle | default: "Titanium. So strong. So light. So Pro." }}</p>
-        <p class="product-price">{{ section.settings.product_price | default: "From $999" }}</p>
+        {% if section.settings.product != blank %}
+          {% assign selected_product = all_products[section.settings.product] %}
+          <h1 class="product-title">{{ selected_product.title }}</h1>
+          <p class="product-subtitle">{{ selected_product.description | truncate: 100 }}</p>
+          <p class="product-price">{{ selected_product.price | money }}</p>
+        {% else %}
+          <h1 class="product-title">{{ section.settings.product_title | default: "Select a Product" }}</h1>
+          <p class="product-subtitle">{{ section.settings.product_subtitle | default: "Choose a product from the section settings" }}</p>
+          <p class="product-price">{{ section.settings.product_price | default: "From $999" }}</p>
+        {% endif %}
       </div>
+
+      {% comment %} Product Variants {% endcomment %}
+      {% if section.settings.product != blank %}
+        {% assign selected_product = all_products[section.settings.product] %}
+        {% if selected_product.has_only_default_variant == false %}
+          <div class="product-section">
+            <h3 class="section-title">Choose Options</h3>
+            <div class="product-variants" id="product-variants">
+              {% for option in selected_product.options_with_values %}
+                <div class="variant-option-group">
+                  <h4 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">{{ option.name }}</h4>
+                  <div class="variant-selector" data-option-name="{{ option.name }}">
+                    {% for value in option.values %}
+                      <button class="variant-button" data-option-value="{{ value }}">
+                        {{ value }}
+                      </button>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
       
       {% for block in section.blocks %}
-        
-
         {% if block.type == 'distance_material' %}
           <div class="distance-material-block" id="distance-material-{{ block.id }}">
             <h3 class="block-title">{{ block.settings.block_title | default: "Distance for Circle" }}</h3>
@@ -775,7 +877,25 @@
         {% endif %}
         
       {% endfor %}
-      
+
+      {% comment %} Add to Cart Section {% endcomment %}
+      {% if section.settings.product != blank %}
+        {% assign selected_product = all_products[section.settings.product] %}
+        <div class="add-to-cart-section">
+          <form action="/cart/add" method="post" enctype="multipart/form-data" id="product-form">
+            <input type="hidden" name="id" id="variant-id" value="{{ selected_product.selected_or_first_available_variant.id }}">
+            <button type="submit" class="add-to-cart-btn" id="add-to-cart">
+              Add to Cart - {{ selected_product.selected_or_first_available_variant.price | money }}
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="add-to-cart-section">
+          <button class="add-to-cart-btn" type="button" disabled>
+            Select a Product
+          </button>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -784,6 +904,29 @@
 document.addEventListener('DOMContentLoaded', function() {
   let currentSlide = 0;
   let totalSlides = 0;
+  let selectedProduct = {{ section.settings.product | json }};
+  let productData = null;
+
+  {% if section.settings.product != blank %}
+    {% assign selected_product = all_products[section.settings.product] %}
+    productData = {
+      id: {{ selected_product.id }},
+      title: {{ selected_product.title | json }},
+      variants: [
+        {% for variant in selected_product.variants %}
+          {
+            id: {{ variant.id }},
+            title: {{ variant.title | json }},
+            price: {{ variant.price }},
+            available: {{ variant.available }},
+            option1: {{ variant.option1 | json }},
+            option2: {{ variant.option2 | json }},
+            option3: {{ variant.option3 | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    };
+  {% endif %}
   
   const track = document.getElementById('carousel-track');
   const slides = track ? track.querySelectorAll('.carousel-slide') : [];
@@ -811,7 +954,9 @@ document.addEventListener('DOMContentLoaded', function() {
         indicator.classList.toggle('active', index === currentSlide);
       });
 
-      updateCircleVisibility();
+      if (window.updateCircleVisibility) {
+        updateCircleVisibility();
+      }
     }
     
     function goToSlide(slideIndex) {
@@ -860,6 +1005,55 @@ document.addEventListener('DOMContentLoaded', function() {
       
       isDragging = false;
     });
+  }
+
+  // Product variant selection
+  if (productData && productData.variants) {
+    const variantSelectors = document.querySelectorAll('.variant-selector');
+    const variantIdInput = document.getElementById('variant-id');
+    const addToCartBtn = document.getElementById('add-to-cart');
+    
+    let selectedOptions = {};
+    
+    variantSelectors.forEach(selector => {
+      const optionName = selector.dataset.optionName;
+      const buttons = selector.querySelectorAll('.variant-button');
+      
+      buttons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Remove selection from siblings
+          buttons.forEach(btn => btn.classList.remove('selected'));
+          // Add selection to clicked button
+          this.classList.add('selected');
+          
+          selectedOptions[optionName] = this.dataset.optionValue;
+          updateSelectedVariant();
+        });
+      });
+      
+      // Select first available option by default
+      if (buttons.length > 0) {
+        buttons[0].click();
+      }
+    });
+    
+    function updateSelectedVariant() {
+      const selectedVariant = productData.variants.find(variant => {
+        return (!selectedOptions['Color'] || variant.option1 === selectedOptions['Color']) &&
+               (!selectedOptions['Size'] || variant.option2 === selectedOptions['Size']) &&
+               (!selectedOptions['Material'] || variant.option3 === selectedOptions['Material']);
+      });
+      
+      if (selectedVariant) {
+        variantIdInput.value = selectedVariant.id;
+        addToCartBtn.innerHTML = `Add to Cart - $${(selectedVariant.price / 100).toFixed(2)}`;
+        addToCartBtn.disabled = !selectedVariant.available;
+        
+        if (!selectedVariant.available) {
+          addToCartBtn.innerHTML = 'Sold Out';
+        }
+      }
+    }
   }
   
   const variantOptions = document.querySelectorAll('.variant-option');
@@ -1184,6 +1378,11 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.addEventListener('click', function() {
       const outputData = {
         blockId: blockId,
+        product: productData ? {
+          id: productData.id,
+          title: productData.title,
+          selectedVariant: document.getElementById('variant-id') ? document.getElementById('variant-id').value : null
+        } : null,
         circles: circles.map(circle => {
           const overlay = circle.element.closest('.image-overlay');
           const rect = overlay.getBoundingClientRect();
@@ -1218,7 +1417,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
       
-      alert(`Data submitted! Check console for details.\n\nTotal Circles: ${circles.length}\nMaterial: ${selectedMaterial || 'None selected'}\nCurrent Image: ${currentSlide + 1}/${totalSlides}`);
+      alert(`Data submitted! Check console for details.\n\nProduct: ${productData ? productData.title : 'None'}\nTotal Circles: ${circles.length}\nMaterial: ${selectedMaterial || 'None selected'}\nCurrent Image: ${currentSlide + 1}/${totalSlides}`);
     });
   }
 
@@ -1235,28 +1434,37 @@ document.addEventListener('DOMContentLoaded', function() {
   "name": "Product Section",
   "settings": [
     {
+      "type": "product",
+      "id": "product",
+      "label": "Select Product",
+      "info": "Choose a product to display. The first image will be the product's main image."
+    },
+    {
       "type": "text",
       "id": "product_title",
-      "label": "Product Title",
-      "default": "iPhone 16 Pro"
+      "label": "Fallback Product Title",
+      "default": "Select a Product",
+      "info": "Used when no product is selected"
     },
     {
       "type": "text",
       "id": "product_subtitle",
-      "label": "Product Subtitle",
-      "default": "Titanium. So strong. So light. So Pro."
+      "label": "Fallback Product Subtitle",
+      "default": "Choose a product from the section settings",
+      "info": "Used when no product is selected"
     },
     {
       "type": "text",
       "id": "product_price",
-      "label": "Product Price",
-      "default": "From $999"
+      "label": "Fallback Product Price",
+      "default": "From $999",
+      "info": "Used when no product is selected"
     }
   ],
   "blocks": [
     {
       "type": "product_image",
-      "name": "Product Image",
+      "name": "Additional Image",
       "settings": [
         {
           "type": "image_picker",
@@ -1283,20 +1491,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       ]
     },
+    {
+      "type": "custom_content",
+      "name": "Custom Content",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Section Title"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    }
   ],
   "presets": [
     {
       "name": "Product Section",
       "blocks": [
-        {
-          "type": "product_image"
-        },
-        {
-          "type": "product_image"
-        },
-        {
-          "type": "product_image"
-        },
         {
           "type": "distance_material"
         }
