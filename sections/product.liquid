@@ -67,7 +67,7 @@
   .carousel-slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
   }
 
@@ -847,18 +847,6 @@
           </div>
         {% endif %}
         
-        {% if block.type == 'custom_content' %}
-          <div class="product-section">
-            {% if block.settings.title != blank %}
-              <h3 class="section-title">{{ block.settings.title }}</h3>
-            {% endif %}
-            {% if block.settings.content != blank %}
-              <div style="color: #1d1d1f; line-height: 1.6;">
-                {{ block.settings.content }}
-              </div>
-            {% endif %}
-          </div>
-        {% endif %}
         
       {% endfor %}
 
@@ -1423,22 +1411,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       ]
     },
-    {
-      "type": "custom_content",
-      "name": "Custom Content",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Section Title"
-        },
-        {
-          "type": "richtext",
-          "id": "content",
-          "label": "Content"
-        }
-      ]
-    }
   ],
   "presets": [
     {
