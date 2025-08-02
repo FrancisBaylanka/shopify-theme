@@ -149,3 +149,147 @@
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 </div>
+
+<style>
+  /* Add to Cart Button Styling - Add this to your existing CSS */
+
+/* Override default Shopify button styles for add to cart */
+.product-form__submit.button {
+  /* Reset default styles */
+  background: linear-gradient(135deg, #007aff, #0056d6) !important;
+  color: white !important;
+  border: none !important;
+  padding: 16px 32px !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3) !important;
+  width: 100% !important;
+  min-height: auto !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.product-form__submit.button:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4) !important;
+  background: linear-gradient(135deg, #0056d6, #004bb5) !important;
+}
+
+.product-form__submit.button:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+
+/* Disabled state styling */
+.product-form__submit.button:disabled {
+  background: #d2d2d7 !important;
+  color: #86868b !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Loading spinner styling when adding to cart */
+.product-form__submit .loading__spinner {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Dynamic checkout button (Buy it now) styling */
+.shopify-payment-button__button--unbranded {
+  background: linear-gradient(135deg, #34c759, #30a14e) !important;
+  color: white !important;
+  border: none !important;
+  padding: 16px 32px !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3) !important;
+  width: 100% !important;
+  margin-top: 12px !important;
+}
+
+.shopify-payment-button__button--unbranded:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(52, 199, 89, 0.4) !important;
+  background: linear-gradient(135deg, #30a14e, #28a745) !important;
+}
+
+/* Ensure the product form buttons container has proper spacing */
+.product-form__buttons {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+/* Style the add to cart section container to match other sections */
+.add-to-cart-section {
+  border-radius: 20px !important;
+  padding: 0 !important;
+  width: 418px;
+}
+
+/* Error message styling to match the design */
+.product-form__error-message-wrapper {
+  background: #ffebee !important;
+  border: 2px solid #f44336 !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  margin-bottom: 16px !important;
+  color: #c62828 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.product-form__error-message-wrapper .svg-wrapper {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-right: 8px !important;
+}
+
+/* Pickup availability styling */
+.pickup-availability-preview {
+  background: white !important;
+  border: 2px solid #d2d2d7 !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin-top: 16px !important;
+  transition: border-color 0.3s ease !important;
+}
+
+.pickup-availability-preview:hover {
+  border-color: #007aff !important;
+}
+
+.pickup-availability-button {
+  color: #007aff !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+.pickup-availability-button:hover {
+  color: #0056d6 !important;
+  text-decoration: underline !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .product-form__submit.button {
+    padding: 14px 24px !important;
+    font-size: 16px !important;
+  }
+  
+  .shopify-payment-button__button--unbranded {
+    padding: 14px 24px !important;
+    font-size: 16px !important;
+  }
+}
+</style>
