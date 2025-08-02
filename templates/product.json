@@ -9,6 +9,45 @@
  */
 {
   "sections": {
+    "product_3qgbiy": {
+      "type": "product",
+      "blocks": {
+        "product_image_MJXGJy": {
+          "type": "product_image",
+          "settings": {
+            "image": "shopify://shop_images/432fc8987db13cfa6de20a2af7e87bca7ee292bd.png",
+            "alt_text": "Product Image"
+          }
+        },
+        "product_image_jGLG3Q": {
+          "type": "product_image",
+          "settings": {
+            "image": "shopify://shop_images/19447179fa3745585ac5bed38185907057e99709.png",
+            "alt_text": "Product Image"
+          }
+        },
+        "distance_material_Y6ahHq": {
+          "type": "distance_material",
+          "settings": {
+            "block_title": "Distance for Circle",
+            "material_title": "Material Selection",
+            "material_name": "Aluminum",
+            "material_name_2": "Steel",
+            "material_name_3": "Plastic",
+            "material_name_4": "Copper"
+          }
+        }
+      },
+      "block_order": [
+        "product_image_MJXGJy",
+        "product_image_jGLG3Q",
+        "distance_material_Y6ahHq"
+      ],
+      "name": "Measurement Section",
+      "settings": {
+        "product": "the-3p-fulfilled-snowboard"
+      }
+    },
     "main": {
       "type": "main-product",
       "blocks": {
@@ -66,6 +105,7 @@
         "description",
         "share"
       ],
+      "disabled": true,
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
@@ -102,6 +142,7 @@
     }
   },
   "order": [
+    "product_3qgbiy",
     "main",
     "related-products"
   ]
