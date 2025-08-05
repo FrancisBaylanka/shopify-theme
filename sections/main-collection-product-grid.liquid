@@ -1,6 +1,10 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-facets.css' | asset_url | stylesheet_tag }}
+{{ 'component-show-more.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch.css' | asset_url | stylesheet_tag }}
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
@@ -22,7 +26,39 @@
   <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
+<script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+
 {%- style -%}
+  :root {
+    --figma-primary-blue: #2563eb;
+    --figma-primary-blue-hover: #1d4ed8;
+    --figma-light-blue: #93c5fd;
+    --figma-light-blue-hover: #7db3fc;
+    --figma-text-primary: #1f2937;
+    --figma-text-secondary: #6b7280;
+    --figma-text-light: #9ca3af;
+    --figma-border-light: #e5e7eb;
+    --figma-bg-white: #ffffff;
+    --figma-bg-light: #f8fafc;
+    --figma-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --figma-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --figma-border-radius: 8px;
+    --figma-border-radius-lg: 12px;
+    --figma-spacing-xs: 0.5rem;
+    --figma-spacing-sm: 0.75rem;
+    --figma-spacing-md: 1rem;
+    --figma-spacing-lg: 1.5rem;
+    --figma-spacing-xl: 2rem;
+    --figma-spacing-2xl: 3rem;
+    --figma-transition: all 0.2s ease;
+    --figma-font-size-sm: 0.875rem;
+    --figma-font-size-base: 1rem;
+    --figma-font-size-lg: 1.125rem;
+    --figma-font-weight-medium: 500;
+    --figma-font-weight-semibold: 600;
+  }
+
   .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
     padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
@@ -34,14 +70,259 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  .collection-tab-container {
+    background: var(--figma-bg-white);
+    margin-bottom: var(--figma-spacing-xl);
+    position: relative;
+    z-index: 10;
+  }
+
+  .collection-tab-container .page-width {
+    max-width: var(--page-width, 120rem);
+    margin: 0 auto;
+    padding: 0 var(--figma-spacing-md);
+  }
+
+  .figma-tab-navigation {
+    display: flex;
+    gap: var(--figma-spacing-md);
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .figma-tab-button {
+    background: var(--figma-light-blue);
+    border: none;
+    padding: var(--figma-spacing-sm) var(--figma-spacing-lg);
+    border-radius: var(--figma-border-radius);
+    font-size: var(--figma-font-size-base);
+    font-weight: var(--figma-font-weight-semibold);
+    color: white;
+    cursor: pointer;
+    transition: var(--figma-transition);
+    white-space: nowrap;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    position: relative;
+    width: auto;
+    min-width: 120px;
+    max-width: 180px;
+  }
+
+  .figma-tab-button:hover {
+    background: var(--figma-light-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--figma-shadow-sm);
+  }
+
+  .figma-tab-button.active {
+    background: var(--figma-primary-blue);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--figma-shadow-md);
+    z-index: 2;
+  }
+
+  .figma-tab-button:focus {
+    outline: 2px solid var(--figma-primary-blue);
+    outline-offset: 2px;
+  }
+
+  .product-card-filtered {
+    transition: var(--figma-transition);
+  }
+
+  .product-card-filtered.tab-hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+  }
+
+  .tab-loading {
+    position: relative;
+    pointer-events: none;
+  }
+
+  .tab-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--figma-border-light);
+    border-top: 2px solid var(--figma-primary-blue);
+    border-radius: 50%;
+    animation: figma-spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes figma-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .tab-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--figma-spacing-2xl);
+    color: var(--figma-text-secondary);
+    display: none;
+    background: var(--figma-bg-light);
+    border-radius: var(--figma-border-radius-lg);
+    margin: var(--figma-spacing-lg) 0;
+  }
+
+  .tab-empty-state.show {
+    display: block;
+  }
+
+  .tab-empty-state h3 {
+    margin: 0 0 var(--figma-spacing-sm);
+    font-size: var(--figma-font-size-lg);
+    font-weight: var(--figma-font-weight-semibold);
+    color: var(--figma-text-primary);
+  }
+
+  .tab-empty-state p {
+    margin: 0;
+    font-size: var(--figma-font-size-base);
+    color: var(--figma-text-secondary);
+  }
+
+  @media screen and (max-width: 749px) {
+    .collection-tab-container .page-width {
+      padding: 0 var(--figma-spacing-sm);
+    }
+
+    .figma-tab-navigation {
+      gap: var(--figma-spacing-sm); 
+      flex-wrap: wrap;
+    }
+
+    .figma-tab-button {
+      padding: var(--figma-spacing-sm) var(--figma-spacing-md);
+      font-size: var(--figma-font-size-sm);
+      min-width: auto;
+      flex: 1;
+      min-height: 44px;
+      border-radius: var(--figma-border-radius);
+    }
+  }
+
+  .product-grid {
+    contain: layout style paint;
+  }
+
+  .grid__item {
+    contain: layout style;
+  }
+
+  .product-grid {
+    transition: opacity 0.3s ease;
+  }
+
+  .product-grid.filtering {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .figma-tab-button:focus-visible {
+    outline: 2px solid var(--figma-primary-blue);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-card-filtered,
+    .figma-tab-button,
+    .product-grid {
+      transition: none;
+    }
+    
+    .tab-loading::after {
+      animation: none;
+    }
+  }
 {%- endstyle -%}
 
 <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
   {%- paginate collection.products by section.settings.products_per_page -%}
+    
+    {% if section.settings.enable_tab_filtering %}
+    <div class="collection-tab-container">
+      <div class="page-width">
+        <nav class="figma-tab-navigation" role="tablist" aria-label="Product category filters">
+          <button 
+            class="figma-tab-button active" 
+            data-tab-filter="all" 
+            role="tab" 
+            aria-selected="true"
+            aria-controls="product-grid"
+            type="button"
+            id="tab-all"
+          >
+            All Products
+            <span class="visually-hidden">({{ collection.products_count }} products)</span>
+          </button>
+          <button 
+            class="figma-tab-button" 
+            data-tab-filter="bundle" 
+            role="tab" 
+            aria-selected="false"
+            aria-controls="product-grid"
+            type="button"
+            id="tab-bundles"
+          >
+            Bundles + Best Deals
+            <span class="visually-hidden" id="bundle-count"></span>
+          </button>
+          <button 
+            class="figma-tab-button" 
+            data-tab-filter="single" 
+            role="tab" 
+            aria-selected="false"
+            aria-controls="product-grid"
+            type="button"
+            id="tab-single"
+          >
+            Single Diffusers
+            <span class="visually-hidden" id="single-count"></span>
+          </button>
+        </nav>
+      </div>
+    </div>
+    {% endif %}
+
     {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
     {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
       <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
         <form class="facets-vertical-form" id="FacetSortForm">
+          {% assign current_tab_filter = request.GET.tab_filter | default: 'all' %}
+          {% if current_tab_filter != 'all' %}
+            <input type="hidden" name="tab_filter" value="{{ current_tab_filter }}">
+          {% endif %}
+          
           <div class="facet-filters sorting caption">
             <div class="facet-filters__field">
               <h2 class="facet-filters__label caption-large text-body">
@@ -98,8 +379,6 @@
     {%- endif -%}
 
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
-      {{ 'component-facets.css' | asset_url | stylesheet_tag }}
-      <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
       {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
         <aside
           aria-labelledby="verticalTitle"
@@ -143,6 +422,12 @@
             class="collection{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
           >
             <div class="loading-overlay gradient"></div>
+            
+            <div class="tab-empty-state" id="tabEmptyState">
+              <h3>No products found</h3>
+              <p>Try selecting a different category or check back later.</p>
+            </div>
+
             <ul
               id="product-grid"
               data-id="{{ section.id }}"
@@ -151,6 +436,8 @@
                 grid--{{ section.settings.columns_desktop }}-col-desktop
                 {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
               "
+              role="region"
+              aria-live="polite"
             >
               {% assign skip_card_product_styles = false %}
               {%- for product in collection.products -%}
@@ -158,8 +445,42 @@
                 {%- if forloop.index > 2 -%}
                   {%- assign lazy_load = true -%}
                 {%- endif -%}
+                
+                {%- liquid
+                  assign product_type_tags = ''
+                  assign is_bundle = false
+                  assign is_single = true
+                  
+                  # Check for bundle tags from settings
+                  assign bundle_tags_setting = section.settings.bundle_tags | default: 'bundle,kit,set'
+                  assign bundle_tags_array = bundle_tags_setting | split: ','
+                  
+                  for tag in product.tags
+                    assign tag_lower = tag | downcase | strip
+                    for bundle_tag in bundle_tags_array
+                      assign bundle_tag_clean = bundle_tag | downcase | strip
+                      if tag_lower contains bundle_tag_clean
+                        assign is_bundle = true
+                        assign is_single = false
+                        break
+                      endif
+                    endfor
+                    if is_bundle
+                      break
+                    endif
+                  endfor
+                  
+                  if is_bundle
+                    assign product_type_tags = 'bundle'
+                  else
+                    assign product_type_tags = 'single'
+                  endif
+                -%}
+
                 <li
-                  class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                  class="grid__item product-card-filtered{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                  data-product-tab-type="{{ product_type_tags }}"
+                  data-product-id="{{ product.id }}"
                   {% if settings.animations_reveal_on_scroll %}
                     data-cascade
                     style="--animation-order: {{ forloop.index }};"
@@ -194,6 +515,547 @@
     {{ 'mask-arch.svg' | inline_asset_content }}
   {%- endif -%}
 </div>
+
+<script>
+  const FIGMA_TAB_CONFIG = {
+    ANIMATION_DURATION: 300,
+    DEBOUNCE_DELAY: 150,
+    LOADING_DELAY: 100,
+    ERROR_RETRY_ATTEMPTS: 3,
+    STAGGER_DELAY: 10
+  };
+
+  class FigmaTabFilter {
+    constructor() {
+      this.init();
+      this.bindEvents();
+      this.calculateProductCounts();
+      this.setupPerformanceOptimizations();
+    }
+
+    init() {
+      this.tabButtons = document.querySelectorAll('[data-tab-filter]');
+      this.productCards = document.querySelectorAll('.product-card-filtered');
+      this.productGrid = document.getElementById('product-grid');
+      this.emptyState = document.getElementById('tabEmptyState');
+      this.currentFilter = this.getInitialFilter();
+      this.isFiltering = false;
+      this.retryAttempts = 0;
+      this.productCounts = {};
+    }
+
+    getInitialFilter() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('tab_filter') || 'all';
+    }
+
+    bindEvents() {
+      const tabNavigation = document.querySelector('.figma-tab-navigation');
+      if (tabNavigation) {
+        tabNavigation.addEventListener('click', this.handleTabClick.bind(this));
+        tabNavigation.addEventListener('keydown', this.handleTabKeydown.bind(this));
+      }
+
+      window.addEventListener('popstate', this.handleBrowserNavigation.bind(this));
+
+      document.addEventListener('submit', this.handleFacetSubmit.bind(this));
+
+      this.setupPerformanceMonitoring();
+    }
+
+    handleTabClick(e) {
+      if (!e.target.matches('[data-tab-filter]')) return;
+      
+      e.preventDefault();
+      const button = e.target;
+      const filter = button.dataset.tabFilter;
+      
+      if (filter === this.currentFilter || this.isFiltering) return;
+      
+      this.updateActiveTab(button);
+      this.filterProducts(filter);
+      this.updateURL(filter);
+      this.currentFilter = filter;
+
+      this.trackFilterUsage(filter);
+    }
+
+    handleTabKeydown(e) {
+      if (!e.target.matches('[data-tab-filter]')) return;
+
+      const buttons = Array.from(this.tabButtons);
+      const currentIndex = buttons.indexOf(e.target);
+      let targetIndex;
+      
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          targetIndex = currentIndex > 0 ? currentIndex - 1 : buttons.length - 1;
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          targetIndex = currentIndex < buttons.length - 1 ? currentIndex + 1 : 0;
+          break;
+        case 'Home':
+          e.preventDefault();
+          targetIndex = 0;
+          break;
+        case 'End':
+          e.preventDefault();
+          targetIndex = buttons.length - 1;
+          break;
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          this.handleTabClick(e);
+          return;
+        default:
+          return;
+      }
+      
+      buttons[targetIndex]?.focus();
+    }
+
+    updateActiveTab(activeButton) {
+      this.tabButtons.forEach(button => {
+        button.classList.remove('active');
+        button.setAttribute('aria-selected', 'false');
+      });
+      
+      activeButton.classList.add('active');
+      activeButton.setAttribute('aria-selected', 'true');
+    }
+
+    async filterProducts(filter) {
+      if (this.isFiltering) return;
+      
+      this.isFiltering = true;
+      this.showLoadingState();
+      
+      try {
+        await this.performBatchFiltering(filter);
+        this.retryAttempts = 0;
+        
+      } catch (error) {
+        this.handleFilterError(error, filter);
+      } finally {
+        this.isFiltering = false;
+      }
+    }
+
+    async performBatchFiltering(filter) {
+      return new Promise(resolve => {
+        requestAnimationFrame(async () => {
+          let visibleCount = 0;
+          const gridItems = Array.from(this.productCards);
+          
+          await new Promise(resolve => setTimeout(resolve, FIGMA_TAB_CONFIG.LOADING_DELAY));
+          
+          const fragment = document.createDocumentFragment();
+          
+          gridItems.forEach((card, index) => {
+            const shouldShow = this.shouldShowProduct(card, filter);
+            
+            setTimeout(() => {
+              if (shouldShow) {
+                card.classList.remove('tab-hidden');
+                visibleCount++;
+              } else {
+                card.classList.add('tab-hidden');
+              }
+            }, index * FIGMA_TAB_CONFIG.STAGGER_DELAY);
+          });
+          
+          setTimeout(() => {
+            this.updateEmptyState(visibleCount);
+            this.updateProductCount(visibleCount, filter);
+            this.hideLoadingState();
+            this.announceFilterResults(visibleCount, filter);
+            resolve();
+          }, FIGMA_TAB_CONFIG.ANIMATION_DURATION);
+        });
+      });
+    }
+
+    shouldShowProduct(card, filter) {
+      if (filter === 'all') return true;
+      
+      const productType = card.dataset.productTabType || 'single';
+      return productType === filter;
+    }
+
+    showLoadingState() {
+      this.productGrid?.classList.add('filtering');
+      
+      const activeTab = document.querySelector('.figma-tab-button.active');
+      activeTab?.classList.add('tab-loading');
+    }
+
+    hideLoadingState() {
+      this.productGrid?.classList.remove('filtering');
+      
+      const loadingTab = document.querySelector('.figma-tab-button.tab-loading');
+      loadingTab?.classList.remove('tab-loading');
+    }
+
+    updateEmptyState(visibleCount) {
+      if (this.emptyState) {
+        this.emptyState.classList.toggle('show', visibleCount === 0);
+      }
+    }
+
+    updateProductCount(count, filter) {
+      const countElements = document.querySelectorAll('[id*="ProductCount"]');
+      countElements.forEach(el => {
+        if (el.textContent.includes('products')) {
+          const filterName = this.getFilterDisplayName(filter);
+          el.textContent = `Showing ${count} ${filterName}`;
+        }
+      });
+    }
+
+    getFilterDisplayName(filter) {
+      switch (filter) {
+        case 'all': return 'products';
+        case 'single': return 'single diffusers';
+        case 'bundle': return 'bundles';
+        default: return 'products';
+      }
+    }
+
+    announceFilterResults(count, filter) {
+      const filterName = this.getFilterDisplayName(filter);
+      const announcement = `Showing ${count} ${filterName}`;
+      
+      const announcer = document.createElement('div');
+      announcer.setAttribute('aria-live', 'polite');
+      announcer.setAttribute('aria-atomic', 'true');
+      announcer.className = 'visually-hidden';
+      announcer.textContent = announcement;
+      
+      document.body.appendChild(announcer);
+      setTimeout(() => {
+        document.body.contains(announcer) && document.body.removeChild(announcer);
+      }, 1000);
+    }
+
+    calculateProductCounts() {
+      this.productCounts = { all: 0, single: 0, bundle: 0 };
+      
+      this.productCards.forEach(card => {
+        const type = card.dataset.productTabType || 'single';
+        this.productCounts.all++;
+        this.productCounts[type]++;
+      });
+      
+      this.updateTabCounts();
+      
+      return this.productCounts;
+    }
+
+    updateTabCounts() {
+      const singleCountEl = document.getElementById('single-count');
+      const bundleCountEl = document.getElementById('bundle-count');
+      
+      if (singleCountEl) {
+        singleCountEl.textContent = `(${this.productCounts.single} products)`;
+      }
+      if (bundleCountEl) {
+        bundleCountEl.textContent = `(${this.productCounts.bundle} products)`;
+      }
+    }
+
+    updateURL(filter) {
+      const url = new URL(window.location);
+      
+      if (filter === 'all') {
+        url.searchParams.delete('tab_filter');
+      } else {
+        url.searchParams.set('tab_filter', filter);
+      }
+      
+      history.replaceState(null, '', url.toString());
+    }
+
+    handleBrowserNavigation() {
+      const filterFromURL = this.getInitialFilter();
+      
+      if (filterFromURL !== this.currentFilter) {
+        const targetButton = document.querySelector(`[data-tab-filter="${filterFromURL}"]`);
+        if (targetButton) {
+          this.updateActiveTab(targetButton);
+          this.filterProducts(filterFromURL);
+          this.currentFilter = filterFromURL;
+        }
+      }
+    }
+
+    handleFacetSubmit(e) {
+      if (!e.target.matches('#FacetFiltersForm, #FacetFiltersFormMobile')) return;
+      
+      if (this.currentFilter !== 'all') {
+        let hiddenInput = e.target.querySelector('input[name="tab_filter"]');
+        if (!hiddenInput) {
+          hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'tab_filter';
+          e.target.appendChild(hiddenInput);
+        }
+        hiddenInput.value = this.currentFilter;
+      }
+    }
+
+    handleFilterError(error, filter) {
+      console.error('Tab filter error:', error);
+      this.hideLoadingState();
+      
+      if (this.retryAttempts < FIGMA_TAB_CONFIG.ERROR_RETRY_ATTEMPTS) {
+        const retryDelay = Math.pow(2, this.retryAttempts) * 1000;
+        setTimeout(() => {
+          this.retryAttempts++;
+          this.filterProducts(filter);
+        }, retryDelay);
+      } else {
+        this.announceFilterResults(0, 'error');
+        this.resetToAllProducts();
+      }
+    }
+
+    resetToAllProducts() {
+      const allTab = document.querySelector('[data-tab-filter="all"]');
+      if (allTab && this.currentFilter !== 'all') {
+        this.updateActiveTab(allTab);
+        this.filterProducts('all');
+        this.currentFilter = 'all';
+      }
+    }
+
+    setupPerformanceOptimizations() {
+      if ('IntersectionObserver' in window && this.productCards.length > 50) {
+        this.setupIntersectionObserver();
+      }
+
+      this.setupResizeHandler();
+    }
+
+    setupIntersectionObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          entry.target.classList.toggle('in-viewport', entry.isIntersecting);
+        });
+      }, {
+        rootMargin: '50px',
+        threshold: 0.1
+      });
+
+      this.productCards.forEach(card => observer.observe(card));
+    }
+
+    setupResizeHandler() {
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          this.productGrid?.dispatchEvent(new CustomEvent('resize'));
+        }, FIGMA_TAB_CONFIG.DEBOUNCE_DELAY);
+      });
+    }
+
+    setupPerformanceMonitoring() {
+      if ('performance' in window && typeof performance.mark === 'function') {
+        performance.mark('figma-tab-filter-start');
+        
+        window.addEventListener('load', () => {
+          performance.mark('figma-tab-filter-complete');
+          try {
+            performance.measure('figma-tab-filter-duration', 'figma-tab-filter-start', 'figma-tab-filter-complete');
+          } catch (e) {
+          }
+        });
+      }
+    }
+
+    trackFilterUsage(filter) {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'filter_interaction', {
+          'event_category': 'product_filtering',
+          'event_label': filter,
+          'value': this.productCounts[filter] || 0
+        });
+      }
+    }
+
+    refresh() {
+      this.calculateProductCounts();
+      if (this.currentFilter !== 'all') {
+        this.filterProducts(this.currentFilter);
+      }
+    }
+  }
+
+  class FigmaFacetsTabIntegration {
+    constructor(tabFilter) {
+      this.tabFilter = tabFilter;
+      this.init();
+    }
+
+    init() {
+      document.addEventListener('facet:updated', this.handleFacetUpdate.bind(this));
+      
+      this.enhanceFacetForms();
+    }
+
+    handleFacetUpdate(e) {
+      clearTimeout(this.facetUpdateTimeout);
+      this.facetUpdateTimeout = setTimeout(() => {
+        if (this.tabFilter.currentFilter !== 'all') {
+          this.tabFilter.filterProducts(this.tabFilter.currentFilter);
+        }
+      }, 100);
+    }
+
+    enhanceFacetForms() {
+      const facetForms = document.querySelectorAll('#FacetFiltersForm, #FacetFiltersFormMobile, #FacetSortForm');
+      
+      facetForms.forEach(form => {
+        const originalSubmitHandler = form.onsubmit;
+        
+        form.addEventListener('submit', (e) => {
+          this.preserveTabState(form);
+          
+          if (originalSubmitHandler) {
+            originalSubmitHandler.call(form, e);
+          }
+        });
+      });
+    }
+
+    preserveTabState(form) {
+      if (this.tabFilter.currentFilter !== 'all') {
+        let tabInput = form.querySelector('input[name="tab_filter"]');
+        if (!tabInput) {
+          tabInput = document.createElement('input');
+          tabInput.type = 'hidden';
+          tabInput.name = 'tab_filter';
+          form.appendChild(tabInput);
+        }
+        tabInput.value = this.tabFilter.currentFilter;
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      const figmaTabFilter = new FigmaTabFilter();
+      const facetsIntegration = new FigmaFacetsTabIntegration(figmaTabFilter);
+      
+      if (figmaTabFilter.currentFilter !== 'all') {
+        const targetButton = document.querySelector(`[data-tab-filter="${figmaTabFilter.currentFilter}"]`);
+        if (targetButton) {
+          figmaTabFilter.updateActiveTab(targetButton);
+          figmaTabFilter.filterProducts(figmaTabFilter.currentFilter);
+        }
+      }
+      
+      if (typeof Shopify !== 'undefined' && Shopify.designMode) {
+        window.figmaTabFilter = figmaTabFilter;
+        console.log('Figma Tab Filter initialized in design mode');
+      }
+      
+    } catch (error) {
+      console.error('Failed to initialize Figma Tab Filter:', error);
+      document.querySelectorAll('.product-card-filtered').forEach(card => {
+        card.classList.remove('tab-hidden');
+      });
+    }
+  });
+
+  document.addEventListener('shopify:section:load', () => {
+    if (document.querySelector('.figma-tab-navigation')) {
+      setTimeout(() => {
+        new FigmaTabFilter();
+      }, 100);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' && !e.shiftKey && document.activeElement === document.body) {
+      const firstTab = document.querySelector('.figma-tab-button');
+      if (firstTab) {
+        e.preventDefault();
+        firstTab.focus();
+      }
+    }
+  });
+
+  window.addEventListener('error', (e) => {
+    if (e.message.includes('tab') || e.message.includes('filter')) {
+      console.warn('Tab filtering error recovered:', e.message);
+      
+      document.querySelectorAll('.product-card-filtered').forEach(card => {
+        card.classList.remove('tab-hidden');
+      });
+      
+      const allTab = document.querySelector('[data-tab-filter="all"]');
+      if (allTab) {
+        allTab.classList.add('active');
+        allTab.setAttribute('aria-selected', 'true');
+      }
+    }
+  });
+
+  if ('performance' in window) {
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const entries = performance.getEntriesByType('navigation');
+        if (entries.length > 0) {
+          const loadTime = entries[0].loadEventEnd - entries[0].fetchStart;
+          console.log(`Collection page loaded in ${loadTime.toFixed(2)}ms`);
+        }
+      }, 0);
+    });
+  }
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ collection.title | json }},
+  "url": "{{ shop.url }}{{ collection.url }}",
+  {% if collection.description != blank %}
+  "description": {{ collection.description | strip_html | truncate: 160 | json }},
+  {% endif %}
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ collection.products_count }},
+    "itemListElement": [
+      {% for product in collection.products limit: 50 %}
+        {
+          "@type": "Product",
+          "position": {{ forloop.index }},
+          "name": {{ product.title | json }},
+          "url": "{{ shop.url }}{{ product.url }}",
+          {% if product.featured_image %}
+          "image": "{{ product.featured_image | img_url: '600x600' }}",
+          {% endif %}
+          "offers": {
+            "@type": "Offer",
+            "price": "{{ product.price | money_without_currency }}",
+            "priceCurrency": "{{ cart.currency.iso_code }}",
+            "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ shop.url }}/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 
 {% schema %}
 {
@@ -380,6 +1242,42 @@
       "id": "enable_sorting",
       "default": true,
       "label": "t:sections.main-collection-product-grid.settings.enable_sorting.label"
+    },
+    {
+      "type": "header",
+      "content": "Figma Tab Filtering Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_tab_filtering",
+      "default": true,
+      "label": "Enable custom tab filtering",
+      "info": "Show All Products, Bundles + Best Deals, and Single Diffusers tabs"
+    },
+    {
+      "type": "text",
+      "id": "bundle_tags",
+      "default": "bundle,kit,set,deal,combo",
+      "label": "Bundle identifier tags",
+      "info": "Comma-separated list of tags that identify bundle products"
+    },
+    {
+      "type": "text",
+      "id": "tab_all_label",
+      "default": "All Products",
+      "label": "All Products tab label"
+    },
+    {
+      "type": "text",
+      "id": "tab_bundle_label",
+      "default": "Bundles + Best Deals",
+      "label": "Bundles tab label"
+    },
+    {
+      "type": "text",
+      "id": "tab_single_label",
+      "default": "Single Diffusers",
+      "label": "Single products tab label"
     },
     {
       "type": "header",
