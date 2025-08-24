@@ -12,6 +12,13 @@
     "product_3qgbiy": {
       "type": "product",
       "blocks": {
+        "product_image_C8Rwzz": {
+          "type": "product_image",
+          "settings": {
+            "image": "shopify://shop_images/car_truck_seat_witch_attachment_3d_model_c4d_max_obj_fbx_ma_lwo_3ds_3dm_stl_1511222_o.jpg",
+            "alt_text": "Product Image"
+          }
+        },
         "product_image_MJXGJy": {
           "type": "product_image",
           "settings": {
@@ -39,6 +46,7 @@
         }
       },
       "block_order": [
+        "product_image_C8Rwzz",
         "product_image_MJXGJy",
         "product_image_jGLG3Q",
         "distance_material_Y6ahHq"
